@@ -26,7 +26,7 @@ public class ProductController {
     public String listProducts(Model model) {
         List<ProductBasic> products = repository.getAllProducts();
         model.addAttribute("products", products);
-        return "products";
+        return "products-list";
     }
 
     @GetMapping("/products/{id}")
