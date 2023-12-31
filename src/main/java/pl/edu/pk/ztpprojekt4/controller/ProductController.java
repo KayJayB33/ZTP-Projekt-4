@@ -3,8 +3,10 @@ package pl.edu.pk.ztpprojekt4.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import pl.edu.pk.ztpprojekt4.model.Product;
 import pl.edu.pk.ztpprojekt4.model.ProductBasic;
 import pl.edu.pk.ztpprojekt4.repository.ProductRepository;
@@ -32,5 +34,11 @@ public class ProductController {
         Product product = repository.getProductById(id);
         model.addAttribute("product", product);
         return "product-details";
+    }
+
+    @PostMapping("/products/{id}/delete")
+    public String deleteProduct(@PathVariable String id, Model model) {
+        repository.deleteProduct(id);
+        return listProducts(model);
     }
 }

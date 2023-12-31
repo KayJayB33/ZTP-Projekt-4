@@ -30,6 +30,20 @@ public class ProductRepository {
                 .block(TIMEOUT_MS);
     }
 
+    public boolean deleteProduct(String id) {
+        ResponseEntity<String> response = webClient.delete()
+                .uri("/products/{id}", id)
+                .retrieve()
+                .toEntity(String.class)
+                .block(TIMEOUT_MS);
+
+        if(response == null) {
+            return false;
+        }
+
+        return response.getStatusCode().is2xxSuccessful();
+    }
+
     public Product getProductById(String id) {
         return webClient.get()
                 .uri("/products/{id}", id)
