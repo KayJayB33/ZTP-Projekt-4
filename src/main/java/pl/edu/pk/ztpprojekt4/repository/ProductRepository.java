@@ -63,7 +63,7 @@ public class ProductRepository {
 
     public ResponseEntity<String> updateProduct(String id, ProductRequest request) {
         return webClient.put()
-                .uri("/products/{id}")
+                .uri("/products/{id}", id)
                 .bodyValue(request)
                 .retrieve()
                 .toEntity(String.class)

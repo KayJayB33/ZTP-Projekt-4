@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Add/Edit Product</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1>Add/Edit Product</h1>
+    <form th:action="${productId != null} ? @{/products/{id}(id=${productId})} : @{/products}" th:object="${productRequest}" th:method="post">
+        <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text" id="name" th:field="*{name}" class="form-control">
+            <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="alert alert-danger"></div>
+        </div>
+        <div class="form-group">
+            <label for="description">Description:</label>
+            <input type="text" id="description" th:field="*{description}" class="form-control">
+            <div th:if="${#fields.hasErrors('description')}" th:errors="*{description}" class="alert alert-danger"></div>
+        </div>
+        <div class="form-group">
+            <label for="price">Price:</label>
+            <input type="number" id="price" th:field="*{price}" class="form-control">
+            <div th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="alert alert-danger"></div>
+        </div>
+        <div class="form-group">
+            <label for="availableQuantity">Available Quantity:</label>
+            <input type="number" id="availableQuantity" th:field="*{availableQuantity}" class="form-control">
+            <div th:if="${#fields.hasErrors('availableQuantity')}" th:errors="*{availableQuantity}" class="alert alert-danger"></div>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Submit" class="btn btn-primary">
+        </div>
+    </form>
+</div>
+</body>
+</html>
