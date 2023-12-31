@@ -10,16 +10,17 @@ import pl.edu.pk.ztpprojekt4.model.Product;
 import pl.edu.pk.ztpprojekt4.model.ProductBasic;
 import pl.edu.pk.ztpprojekt4.model.ProductRequest;
 import pl.edu.pk.ztpprojekt4.repository.ProductRepository;
+import pl.edu.pk.ztpprojekt4.service.ProductService;
 
 import java.util.List;
 
 @Controller
 public class ProductController {
 
-    private final ProductRepository repository;
+    private final ProductService productService;
 
-    public ProductController(@Autowired ProductRepository repository) {
-        this.repository = repository;
+    public ProductController(@Autowired ProductService productService) {
+        this.productService = productService;
     }
 
     @GetMapping("/")
@@ -29,21 +30,21 @@ public class ProductController {
 
     @GetMapping("/products")
     public String listProducts(Model model) {
-        List<ProductBasic> products = repository.getAllProducts();
+        List<ProductBasic> products = productService.getAllProducts();
         model.addAttribute("products", products);
         return "products-list";
     }
 
     @GetMapping("/products/{id}")
     public String showProductDetails(@PathVariable String id, Model model) {
-        Product product = repository.getProductById(id);
+        Product product = productService.getProductById(id);
         model.addAttribute("product", product);
         return "product-details";
     }
 
     @PostMapping("/products/{id}/delete")
     public String deleteProduct(@PathVariable String id) {
-        repository.deleteProduct(id);
+        productService.deleteProduct(id);
         return "redirect:/products";
     }
 
@@ -55,7 +56,7 @@ public class ProductController {
 
     @GetMapping("/products/{id}/edit")
     public String showEditProductForm(@PathVariable String id, Model model) {
-        Product product = repository.getProductById(id);
+        Product product = productService.getProductById(id);
         model.addAttribute("productId", id);
         model.addAttribute("productRequest", new ProductRequest(
                 product.name(),
@@ -70,7 +71,7 @@ public class ProductController {
         if(bindingResult.hasErrors()) {
             return "product-form";
         }
-        repository.insertProduct(productRequest);
+        productService.insertProduct(productRequest);
         return "redirect:/products";
     }
 
@@ -79,7 +80,7 @@ public class ProductController {
         if(bindingResult.hasErrors()) {
             return "product-form";
         }
-        repository.updateProduct(id, productRequest);
+        productService.updateProduct(id, productRequest);
         return "redirect:/products";
     }
 }

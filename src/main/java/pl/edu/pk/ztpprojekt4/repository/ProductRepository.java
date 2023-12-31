@@ -21,34 +21,19 @@ public class ProductRepository {
         this.webClient = webClient;
     }
 
-    public List<ProductBasic> getAllProducts() {
+    public ResponseEntity<List<ProductBasic>> getAllProducts() {
         return webClient.get()
                 .uri("/products")
                 .retrieve()
-                .bodyToFlux(ProductBasic.class)
-                .collectList()
+                .toEntityList(ProductBasic.class)
                 .block(TIMEOUT_MS);
     }
 
-    public boolean deleteProduct(String id) {
-        ResponseEntity<String> response = webClient.delete()
-                .uri("/products/{id}", id)
-                .retrieve()
-                .toEntity(String.class)
-                .block(TIMEOUT_MS);
-
-        if(response == null) {
-            return false;
-        }
-
-        return response.getStatusCode().is2xxSuccessful();
-    }
-
-    public Product getProductById(String id) {
+    public ResponseEntity<Product> getProductById(String id) {
         return webClient.get()
                 .uri("/products/{id}", id)
                 .retrieve()
-                .bodyToMono(Product.class)
+                .toEntity(Product.class)
                 .block(TIMEOUT_MS);
     }
 
@@ -65,6 +50,14 @@ public class ProductRepository {
         return webClient.put()
                 .uri("/products/{id}", id)
                 .bodyValue(request)
+                .retrieve()
+                .toEntity(String.class)
+                .block(TIMEOUT_MS);
+    }
+
+    public ResponseEntity<String> deleteProduct(String id) {
+        return webClient.delete()
+                .uri("/products/{id}", id)
                 .retrieve()
                 .toEntity(String.class)
                 .block(TIMEOUT_MS);

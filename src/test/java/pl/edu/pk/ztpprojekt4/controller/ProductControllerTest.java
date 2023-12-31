@@ -11,7 +11,7 @@ import pl.edu.pk.ztpprojekt4.model.Product;
 import pl.edu.pk.ztpprojekt4.model.ProductBasic;
 import pl.edu.pk.ztpprojekt4.model.ProductRequest;
 import pl.edu.pk.ztpprojekt4.model.ProductState;
-import pl.edu.pk.ztpprojekt4.repository.ProductRepository;
+import pl.edu.pk.ztpprojekt4.service.ProductService;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ProductControllerTest {
 
     @Mock
-    ProductRepository repository;
+    ProductService productService;
 
     @InjectMocks
     ProductController controller;
@@ -39,24 +39,25 @@ class ProductControllerTest {
     }
 
     @Test
+    void shouldShowLandingPage() throws Exception {
+        mockMvc.perform(get("/"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"));
+    }
+
+    @Test
     void shouldListProducts() throws Exception {
         List<ProductBasic> products = Arrays.asList(
-                new ProductBasic("1",
-                        "Product 1",
-                        BigDecimal.ONE,
-                        ProductState.AVAILABLE),
-                new ProductBasic("2",
-                        "Product 2",
-                        BigDecimal.TWO,
-                        ProductState.OUT_OF_STOCK));
-        when(repository.getAllProducts()).thenReturn(products);
+                new ProductBasic("1", "Product 1", BigDecimal.TEN, ProductState.AVAILABLE),
+                new ProductBasic("2", "Product 2", BigDecimal.ZERO, ProductState.OUT_OF_STOCK));
+        when(productService.getAllProducts()).thenReturn(products);
 
         mockMvc.perform(get("/products"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("products-list"))
                 .andExpect(model().attribute("products", products));
 
-        verify(repository, times(1)).getAllProducts();
+        verify(productService, times(1)).getAllProducts();
     }
 
     @Test
@@ -69,14 +70,14 @@ class ProductControllerTest {
                 ProductState.AVAILABLE,
                 null,
                 null);
-        when(repository.getProductById("1")).thenReturn(product);
+        when(productService.getProductById("1")).thenReturn(product);
 
         mockMvc.perform(get("/products/1"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("product-details"))
                 .andExpect(model().attribute("product", product));
 
-        verify(repository, times(1)).getProductById("1");
+        verify(productService, times(1)).getProductById("1");
     }
 
     @Test
@@ -85,7 +86,7 @@ class ProductControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/products"));
 
-        verify(repository, times(1)).deleteProduct("1");
+        verify(productService, times(1)).deleteProduct("1");
     }
 
     @Test
@@ -106,7 +107,7 @@ class ProductControllerTest {
                 ProductState.AVAILABLE,
                 null,
                 null);
-        when(repository.getProductById("1")).thenReturn(product);
+        when(productService.getProductById("1")).thenReturn(product);
 
         mockMvc.perform(get("/products/1/edit"))
                 .andExpect(status().isOk())
@@ -114,7 +115,7 @@ class ProductControllerTest {
                 .andExpect(model().attribute("productId", "1"))
                 .andExpect(model().attributeExists("productRequest"));
 
-        verify(repository, times(1)).getProductById("1");
+        verify(productService, times(1)).getProductById("1");
     }
 
     @Test
@@ -129,7 +130,7 @@ class ProductControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/products"));
 
-        verify(repository, times(1)).insertProduct(productRequest);
+        verify(productService, times(1)).insertProduct(productRequest);
     }
 
     @Test
@@ -144,6 +145,6 @@ class ProductControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/products"));
 
-        verify(repository, times(1)).updateProduct("1", productRequest);
+        verify(productService, times(1)).updateProduct("1", productRequest);
     }
 }
