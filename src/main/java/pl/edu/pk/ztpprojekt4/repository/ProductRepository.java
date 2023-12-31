@@ -46,12 +46,12 @@ public class ProductRepository {
                 .block(TIMEOUT_MS);
     }
 
-    public ResponseEntity<String> updateProduct(String id, ProductRequest request) {
+    public ResponseEntity<Product> updateProduct(String id, ProductRequest request) {
         return webClient.put()
                 .uri("/products/{id}", id)
                 .bodyValue(request)
                 .retrieve()
-                .toEntity(String.class)
+                .toEntity(Product.class)
                 .block(TIMEOUT_MS);
     }
 

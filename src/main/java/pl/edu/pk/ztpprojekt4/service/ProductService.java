@@ -45,8 +45,8 @@ public class ProductService {
         return response.getBody();
     }
 
-    public String updateProduct(String id, ProductRequest request) {
-        final ResponseEntity<String> response = repository.updateProduct(id, request);
+    public Product updateProduct(String id, ProductRequest request) {
+        final ResponseEntity<Product> response = repository.updateProduct(id, request);
         if(response.getStatusCode().isError()) {
             throw new RuntimeException("Failed to update product with id {%s}: %s".formatted(id, response.getBody()));
         }

@@ -8,6 +8,7 @@
 <div class="container">
     <h1>Product List</h1>
     <a class="btn btn-primary" th:href="@{/products/new}">Add New Product</a>
+    <div th:if="${message}" class="alert alert-success" th:text="${message}" style="white-space: pre-wrap"></div>
     <table class="table">
         <thead>
         <tr>
