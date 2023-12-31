@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Error</title>
+    <title>Landing Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 </head>
 <body>
 <div class="container">
-    <h1>Error</h1>
-    <div class="alert alert-danger" th:text="${errorMessage}"></div>
-    <a class="btn btn-primary" th:href="@{/products}">Return to Products List</a>
+    <h1>Welcome to our website!</h1>
+    <a class="btn btn-primary" th:href="@{/products}">Visit Products</a>
 </div>
 </body>
 </html>

@@ -22,6 +22,11 @@ public class ProductController {
         this.repository = repository;
     }
 
+    @GetMapping("/")
+    public String showLandingPage() {
+        return "index";
+    }
+
     @GetMapping("/products")
     public String listProducts(Model model) {
         List<ProductBasic> products = repository.getAllProducts();
