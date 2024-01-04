@@ -86,6 +86,11 @@ public class ProductController {
             return "product-form";
         }
         final Product result = productService.updateProduct(id, productRequest);
+        if (result == null) {
+            redirectAttributes.addFlashAttribute("message", "Failed to update product with id {%s}".formatted(id));
+            return "redirect:/products";
+        }
+
         redirectAttributes.addFlashAttribute("message", """
                     Product updated successfully:
                     {

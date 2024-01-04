@@ -48,8 +48,14 @@ class ProductControllerTest {
     @Test
     void shouldListProducts() throws Exception {
         List<ProductBasic> products = Arrays.asList(
-                new ProductBasic("1", "Product 1", BigDecimal.TEN, ProductState.AVAILABLE),
-                new ProductBasic("2", "Product 2", BigDecimal.ZERO, ProductState.OUT_OF_STOCK));
+                new ProductBasic("1",
+                        "Product 1",
+                        BigDecimal.TEN,
+                        ProductState.AVAILABLE),
+                new ProductBasic("2",
+                        "Product 2",
+                        BigDecimal.ZERO,
+                        ProductState.OUT_OF_STOCK));
         when(productService.getAllProducts()).thenReturn(products);
 
         mockMvc.perform(get("/products"))
@@ -82,9 +88,13 @@ class ProductControllerTest {
 
     @Test
     void shouldDeleteProduct() throws Exception {
+        when(productService.deleteProduct("1")).thenReturn(true);
+
         mockMvc.perform(post("/products/1/delete"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/products"));
+                .andExpect(redirectedUrl("/products"))
+                .andExpect(flash().attributeExists("message"))
+                .andExpect(flash().attribute("message", "Product with id {1} deleted successfully"));
 
         verify(productService, times(1)).deleteProduct("1");
     }
@@ -94,7 +104,8 @@ class ProductControllerTest {
         mockMvc.perform(get("/products/new"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("product-form"))
-                .andExpect(model().attributeExists("productRequest"));
+                .andExpect(model().attributeExists("productRequest"))
+                .andExpect(model().attribute("productRequest", new ProductRequest()));
     }
 
     @Test
@@ -113,7 +124,12 @@ class ProductControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("product-form"))
                 .andExpect(model().attribute("productId", "1"))
-                .andExpect(model().attributeExists("productRequest"));
+                .andExpect(model().attributeExists("productRequest"))
+                .andExpect(model().attribute("productRequest",
+                        new ProductRequest(product.name(),
+                            product.description(),
+                            product.price(),
+                            product.availableQuantity())));
 
         verify(productService, times(1)).getProductById("1");
     }
@@ -125,26 +141,64 @@ class ProductControllerTest {
                 BigDecimal.TEN,
                 10);
 
+        when(productService.insertProduct(productRequest)).thenReturn("1");
+
         mockMvc.perform(post("/products")
                 .flashAttr("productRequest", productRequest))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/products"));
+                .andExpect(redirectedUrl("/products"))
+                .andExpect(flash().attributeExists("message"))
+                .andExpect(flash().attribute("message",
+                        "Product added successfully. New product id is {1}"));
 
         verify(productService, times(1)).insertProduct(productRequest);
     }
 
     @Test
     void shouldEditProduct() throws Exception {
-        ProductRequest productRequest = new ProductRequest("Product 1",
-                "Description 1",
-                BigDecimal.TEN,
-                10);
+        String id = "1";
+        ProductRequest productRequest = new ProductRequest("Updated Product",
+                "Updated Description",
+                BigDecimal.valueOf(20),
+                20);
 
-        mockMvc.perform(post("/products/1")
+        Product newProduct = new Product(id,
+                "Updated Product",
+                "Updated Description",
+                BigDecimal.valueOf(20),
+                20,
+                ProductState.AVAILABLE,
+                null,
+                null);
+        when(productService.updateProduct(id, productRequest)).thenReturn(newProduct);
+
+        mockMvc.perform(post("/products/" + id)
                 .flashAttr("productRequest", productRequest))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/products"));
+                .andExpect(redirectedUrl("/products"))
+                .andExpect(flash().attributeExists("message"))
+                .andExpect(flash().attribute("message", """
+                        Product updated successfully:
+                        {
+                            "id": "%s",
+                            "name": "%s",
+                            "description": "%s",
+                            "price": %s,
+                            "availableQuantity": %s,
+                            "productStatus": "%s",
+                            "createdDate": "%s",
+                            "lastModifiedDate": "%s"
+                        }
+                    """.formatted(
+                        newProduct.id(),
+                        newProduct.name(),
+                        newProduct.description(),
+                        newProduct.price(),
+                        newProduct.availableQuantity(),
+                        newProduct.productState(),
+                        newProduct.createdDate(),
+                        newProduct.lastModifiedDate())));
 
-        verify(productService, times(1)).updateProduct("1", productRequest);
+        verify(productService, times(1)).updateProduct(id, productRequest);
     }
 }

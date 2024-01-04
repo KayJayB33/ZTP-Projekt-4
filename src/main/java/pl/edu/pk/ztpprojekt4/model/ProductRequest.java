@@ -3,6 +3,7 @@ package pl.edu.pk.ztpprojekt4.model;
 import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class ProductRequest {
     @NotNull(message = "Name may not be null")
@@ -65,5 +66,18 @@ public class ProductRequest {
 
     public void setAvailableQuantity(int availableQuantity) {
         this.availableQuantity = availableQuantity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductRequest that = (ProductRequest) o;
+        return availableQuantity == that.availableQuantity && Objects.equals(name, that.name) && Objects.equals(description, that.description) && Objects.equals(price, that.price);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, description, price, availableQuantity);
     }
 }
